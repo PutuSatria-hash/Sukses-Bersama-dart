@@ -1,0 +1,13 @@
+{
+  "rewrites": [
+    {
+      "source": "/runner/(.*)",
+      "destination": "/runner/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+
