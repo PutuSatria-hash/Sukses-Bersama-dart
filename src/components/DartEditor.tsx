@@ -27,14 +27,39 @@ import { tags } from '@lezer/highlight';
 import type { AnalyzeIssue, CompileDiagnostic } from '../runner/dartServices';
 
 const dartHighlightStyle = HighlightStyle.define([
-  { tag: tags.keyword, color: '#818cf8', fontWeight: '600' },
-  { tag: [tags.typeName, tags.className], color: '#22d3ee' },
-  { tag: [tags.function(tags.variableName), tags.propertyName], color: '#38bdf8' },
-  { tag: [tags.string, tags.special(tags.string)], color: '#a3e635' },
-  { tag: [tags.number, tags.bool, tags.null], color: '#fb923c' },
-  { tag: [tags.comment, tags.lineComment, tags.blockComment], color: '#64748b', fontStyle: 'italic' },
-  { tag: tags.operator, color: '#c084fc' },
+  { tag: tags.keyword, color: 'var(--syn-keyword)', fontWeight: '600' },
+  { tag: [tags.typeName, tags.className], color: 'var(--syn-type)' },
+  {
+    tag: [tags.function(tags.variableName), tags.propertyName],
+    color: 'var(--syn-fn)',
+  },
+  { tag: [tags.string, tags.special(tags.string)], color: 'var(--syn-string)' },
+  { tag: [tags.number, tags.bool, tags.null], color: 'var(--syn-number)' },
+  {
+    tag: [tags.comment, tags.lineComment, tags.blockComment],
+    color: 'var(--syn-comment)',
+    fontStyle: 'italic',
+  },
+  { tag: tags.operator, color: 'var(--syn-operator)' },
 ]);
+
+const editorCursorTheme = EditorView.theme({
+  '&': {
+    color: 'var(--editor-fg)',
+    backgroundColor: 'var(--surface-code)',
+  },
+  '.cm-content': {
+    caretColor: 'var(--editor-cursor)',
+  },
+  '.cm-cursor, .cm-dropCursor': {
+    borderLeftColor: 'var(--editor-cursor)',
+    borderLeftWidth: '2.2px',
+  },
+  '&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection':
+    {
+      backgroundColor: 'var(--editor-selection)',
+    },
+});
 
 export interface DartEditorProps {
   problemId: string;
@@ -109,6 +134,7 @@ export const DartEditor: React.FC<DartEditorProps> = ({
         bracketMatching(),
         closeBrackets(),
         java(),
+        editorCursorTheme,
         syntaxHighlighting(dartHighlightStyle),
         linter(() => []),
         customShortcuts,

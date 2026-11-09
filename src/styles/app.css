@@ -6,6 +6,17 @@
   --surface-glass: rgba(15, 22, 36, 0.76);
   --surface-elevated: rgba(22, 32, 51, 0.84);
   --surface-code: #090e17;
+  --editor-gutter-bg: #060a11;
+  --editor-fg: #f1f5f9;
+  --editor-cursor: #ffffff;
+  --editor-selection: rgba(34, 211, 238, 0.28);
+  --syn-keyword: #818cf8;
+  --syn-type: #22d3ee;
+  --syn-fn: #38bdf8;
+  --syn-string: #a3e635;
+  --syn-number: #fb923c;
+  --syn-comment: #64748b;
+  --syn-operator: #c084fc;
   --border-glass: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.15);
   --ink-primary: #f1f5f9;
@@ -28,7 +39,18 @@ html:not(.latih-dark) {
                radial-gradient(circle at 85% 15%, rgba(6, 182, 212, 0.08), transparent 45%);
   --surface-glass: rgba(255, 255, 255, 0.85);
   --surface-elevated: rgba(241, 245, 249, 0.92);
-  --surface-code: #0f172a;
+  --surface-code: #ffffff;
+  --editor-gutter-bg: #f1f5f9;
+  --editor-fg: #0f172a;
+  --editor-cursor: #000000;
+  --editor-selection: rgba(79, 70, 229, 0.2);
+  --syn-keyword: #4f46e5;
+  --syn-type: #0891b2;
+  --syn-fn: #0284c7;
+  --syn-string: #15803d;
+  --syn-number: #c2410c;
+  --syn-comment: #64748b;
+  --syn-operator: #7e22ce;
   --border-glass: rgba(15, 23, 42, 0.09);
   --border-strong: rgba(15, 23, 42, 0.16);
   --ink-primary: #0f172a;
@@ -688,19 +710,29 @@ h1, h2, h3 {
 .latih-editor-wrap .cm-editor {
   height: 100%;
   background: var(--surface-code);
-  color: #e2e8f0;
+  color: var(--editor-fg);
   font-size: 13.5px;
 }
 
+.latih-editor-wrap .cm-editor .cm-content {
+  caret-color: var(--editor-cursor) !important;
+}
+
+.latih-editor-wrap .cm-editor .cm-cursor,
+.latih-editor-wrap .cm-editor .cm-dropCursor {
+  border-left-color: var(--editor-cursor) !important;
+  border-left-width: 2.2px !important;
+}
+
 .latih-editor-wrap .cm-gutters {
-  background: #060a11;
-  color: #475569;
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--editor-gutter-bg);
+  color: var(--ink-muted);
+  border-right: 1px solid var(--border-glass);
 }
 
 .latih-editor-wrap .cm-activeLine,
 .latih-editor-wrap .cm-activeLineGutter {
-  background: rgba(99, 102, 241, 0.09);
+  background: rgba(99, 102, 241, 0.1);
 }
 
 .latih-separator {
@@ -801,7 +833,7 @@ h1, h2, h3 {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.82rem;
-  color: #e2e8f0;
+  color: var(--editor-fg);
 }
 
 .stdout-badge {
@@ -1108,9 +1140,9 @@ h1, h2, h3 {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #e2e8f0;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-glass);
+  color: var(--ink-primary);
   border-radius: 5px;
   padding: 0.18rem 0.5rem;
   font-size: 0.72rem;
@@ -1122,7 +1154,7 @@ h1, h2, h3 {
   padding: 0.75rem 0.9rem;
   overflow-x: auto;
   font-size: 0.83rem;
-  color: #e2e8f0;
+  color: var(--editor-fg);
 }
 
 /* Inline Syntax Summary at Bottom of Brief */
@@ -1275,7 +1307,8 @@ h1, h2, h3 {
   padding: 0.65rem 0.8rem;
   border-radius: 8px;
   background: var(--surface-code);
-  color: #e2e8f0;
+  border: 1px solid var(--border-glass);
+  color: var(--editor-fg);
   font-size: 0.8rem;
   overflow-x: auto;
 }
@@ -1293,16 +1326,16 @@ h1, h2, h3 {
   justify-content: space-between;
   padding: 0.5rem 0.85rem;
   background: rgba(255, 255, 255, 0.04);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid var(--border-glass);
   font-size: 0.78rem;
-  color: #94a3b8;
+  color: var(--ink-secondary);
 }
 
 .full-main-preview pre {
   margin: 0;
   padding: 0.85rem;
   font-size: 0.8rem;
-  color: #e2e8f0;
+  color: var(--editor-fg);
   overflow-x: auto;
 }
 
@@ -1421,7 +1454,7 @@ h1, h2, h3 {
   margin: 0;
   padding: 0.6rem 0.75rem;
   font-size: 0.8rem;
-  color: #a3e635;
+  color: var(--syn-string);
   overflow-x: auto;
 }
 
