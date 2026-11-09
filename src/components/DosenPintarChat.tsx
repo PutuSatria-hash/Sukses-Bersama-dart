@@ -14,7 +14,7 @@ import type { ExecutionState } from './ResultsDock';
 import {
   generateDosenWelcome,
   answerUserQuestion,
-  DOSEN_QUICK_PROMPTS,
+  DOSEN_QUESTION_CATEGORIES,
   type DosenMessage,
 } from '../utils/dosenPintarEngine';
 
@@ -176,6 +176,9 @@ export const DosenPintarChat: React.FC<DosenPintarChatProps> = ({
   const [messages, setMessages] = useState<DosenMessage[]>(() => [
     generateDosenWelcome(problem),
   ]);
+  const [activeCategoryId, setActiveCategoryId] = useState<string>(
+    DOSEN_QUESTION_CATEGORIES[0].id
+  );
   const [inputText, setInputText] = useState('');
   const [appliedMsgId, setAppliedMsgId] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
@@ -191,6 +194,10 @@ export const DosenPintarChat: React.FC<DosenPintarChatProps> = ({
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [messages.length]);
+
+  const activeCategory =
+    DOSEN_QUESTION_CATEGORIES.find((c) => c.id === activeCategoryId) ||
+    DOSEN_QUESTION_CATEGORIES[0];
 
   const handleSendQuestion = (questionText: string) => {
     const trimmed = questionText.trim();
@@ -238,11 +245,12 @@ export const DosenPintarChat: React.FC<DosenPintarChatProps> = ({
           <div>
             <div className="dosen-title-row">
               <h2>Dosen Pintar Dart</h2>
-              <span className="dosen-online-pill">Siap Membantu</span>
+              <span className="dosen-online-pill">Live Code Analyzer</span>
             </div>
             <p>
-              Tanyakan cara menjawab, arti fungsi kode, penyebab error, atau
-              jawaban referensi untuk soal <strong>{problem.id}</strong>.
+              Membaca kode kamu secara langsung untuk menjawab langkah
+              selanjutnya, fungsi tiap baris kode, hingga kunci jawaban soal{' '}
+              <strong>{problem.id}</strong>.
             </p>
           </div>
         </div>
@@ -257,13 +265,27 @@ export const DosenPintarChat: React.FC<DosenPintarChatProps> = ({
         </button>
       </div>
 
-      {/* Quick Prompt Chips Bar */}
+      {/* Categorized Question Explorer Bar */}
       <div className="dosen-quick-bar">
-        <span className="dosen-quick-label">
-          <Sparkles size={12} /> Tanya Cepat:
-        </span>
+        <div className="dosen-cat-tabs">
+          <span className="dosen-quick-label">
+            <Sparkles size={12} /> Kategori Pertanyaan:
+          </span>
+          {DOSEN_QUESTION_CATEGORIES.map((cat) => (
+            <button
+              key={cat.id}
+              type="button"
+              className={`dosen-cat-tab ${
+                activeCategoryId === cat.id ? 'active' : ''
+              }`}
+              onClick={() => setActiveCategoryId(cat.id)}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
         <div className="dosen-quick-chips">
-          {DOSEN_QUICK_PROMPTS.map((prompt) => (
+          {activeCategory.questions.map((prompt) => (
             <button
               key={prompt}
               type="button"
@@ -330,7 +352,7 @@ export const DosenPintarChat: React.FC<DosenPintarChatProps> = ({
                 </div>
               )}
 
-              {/* Suggested follow-up chips on the latest Dosen message */}
+              {/* Suggested follow-up chips on Dosen messages */}
               {msg.sender === 'dosen' &&
                 msg.suggestedFollowUps &&
                 msg.suggestedFollowUps.length > 0 && (
@@ -358,7 +380,7 @@ export const DosenPintarChat: React.FC<DosenPintarChatProps> = ({
         <input
           type="text"
           className="dosen-input-field"
-          placeholder={`Tanyakan cara menjawab ${problem.id}, arti fungsi (misal: final, isEmpty), atau minta jawaban...`}
+          placeholder={`Ketik bebas: "langkah selanjutnya apa?", "fungsi \`trim()\` apa?", "jelaskan baris 2"...`}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
         />
@@ -374,4 +396,3 @@ export const DosenPintarChat: React.FC<DosenPintarChatProps> = ({
     </div>
   );
 };
-
