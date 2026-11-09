@@ -856,6 +856,105 @@ h1, h2, h3 {
   border: 1px solid rgba(248, 113, 113, 0.35);
 }
 
+.stdout-badge.neutral {
+  background: rgba(34, 211, 238, 0.16);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(34, 211, 238, 0.35);
+}
+
+/* Auto Code & Output Explainer Card */
+.output-explainer-card {
+  margin: 0.55rem 0 0.7rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(34, 211, 238, 0.28);
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.12),
+    rgba(34, 211, 238, 0.08)
+  );
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.explainer-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.86rem;
+  color: var(--ink-primary);
+}
+
+.explainer-flow-text {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--ink-secondary);
+}
+
+.explainer-constructs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-top: 0.25rem;
+}
+
+.construct-chip {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  padding: 0.38rem 0.65rem;
+  border-radius: 8px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-glass);
+  font-size: 0.79rem;
+}
+
+.construct-chip code {
+  font-weight: 700;
+  color: var(--accent-cyan);
+  background: rgba(34, 211, 238, 0.12);
+  padding: 0.1rem 0.4rem;
+  border-radius: 5px;
+  font-size: 0.76rem;
+}
+
+.construct-chip span {
+  color: var(--ink-secondary);
+}
+
+.explainer-next-step {
+  margin: 0;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  color: var(--ink-primary);
+  font-size: 0.79rem;
+  line-height: 1.45;
+}
+
+.stdout-item-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+}
+
+.stdout-line-explanation {
+  margin: 0;
+  padding-left: 0.35rem;
+  border-left: 2px solid var(--accent-cyan);
+  font-size: 0.77rem;
+  color: var(--ink-secondary);
+  line-height: 1.45;
+}
+
 .latih-test-list {
   list-style: none;
   margin: 0.5rem 0;

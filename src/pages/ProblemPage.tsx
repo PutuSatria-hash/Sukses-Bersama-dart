@@ -560,6 +560,8 @@ const ProblemWorkspace: React.FC<{ problem: EnhancedProblem }> = ({
                 <ResultsDock
                   state={execState}
                   tests={problem.tests}
+                  problem={problem}
+                  userCode={code}
                   collapsed={resultsCollapsed}
                   onToggleCollapsed={() => setResultsCollapsed((c) => !c)}
                   onGotoLine={handleGotoLine}
@@ -598,6 +600,8 @@ const ProblemWorkspace: React.FC<{ problem: EnhancedProblem }> = ({
             <ResultsDock
               state={execState}
               tests={problem.tests}
+              problem={problem}
+              userCode={code}
               collapsed={resultsCollapsed}
               onToggleCollapsed={() => setResultsCollapsed((c) => !c)}
               onGotoLine={handleGotoLine}

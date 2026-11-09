@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   ChevronDown,
   ChevronUp,
@@ -6,6 +6,9 @@ import {
   XCircle,
   AlertTriangle,
   Terminal,
+  Sparkles,
+  Info,
+  ArrowRightCircle,
 } from 'lucide-react';
 import type {
   RunExecutionResult,
@@ -13,7 +16,11 @@ import type {
   TestCaseResult,
 } from '../runner/execute';
 import type { CompileDiagnostic } from '../runner/dartServices';
-import type { ProblemTestMeta } from '../types/problem';
+import type { EnhancedProblem, ProblemTestMeta } from '../types/problem';
+import {
+  buildRunExplanation,
+  buildSubmitExplanation,
+} from '../utils/outputExplainer';
 
 export type ExecutionState =
   | { kind: 'idle' }
@@ -21,14 +28,16 @@ export type ExecutionState =
   | { kind: 'run'; result: RunExecutionResult }
   | { kind: 'submit'; result: SubmitExecutionResult }
   | {
-    kind: 'compile-error';
-    errors: CompileDiagnostic[];
-    summary: string;
-    mode: 'run' | 'submit';
-  }
+      kind: 'compile-error';
+      errors: CompileDiagnostic[];
+      summary: string;
+      mode: 'run' | 'submit';
+    }
   | { kind: 'failure'; title: string; detail: string };
 
 interface ResultsDockProps {
+  problem: EnhancedProblem;
+  userCode: string;
   state: ExecutionState;
   tests: ProblemTestMeta[];
   collapsed: boolean;
@@ -36,23 +45,21 @@ interface ResultsDockProps {
   onGotoLine: (line: number) => void;
 }
 
-function checkRunLineMatch(line: string): 'match' | 'mismatch' | 'neutral' {
-  const m = line.match(/^Uji\s+\d+\s*->\s*Hasil:\s*(.*?)\s*\|\s*Ekspektasi:\s*(.*)$/);
-  if (!m) return 'neutral';
-  const actualRaw = m[1].trim();
-  const expectedRaw = m[2].trim();
-  const cleanExpected = expectedRaw.replace(/^'|'$/g, '').trim();
-  if (
-    actualRaw === expectedRaw ||
-    actualRaw === cleanExpected ||
-    (expectedRaw.includes('kosong') && (actualRaw === '[]' || actualRaw === '' || actualRaw === '{}'))
-  ) {
-    return 'match';
-  }
-  if (expectedRaw.startsWith('~') || expectedRaw.startsWith('contains(')) {
-    return 'neutral';
-  }
-  return 'mismatch';
+function renderInlineCode(text: string): React.ReactNode[] {
+  const parts = text.split(/(`[^`]+`|\*\*[^*]+\*\*)/g);
+  return parts.map((part, idx) => {
+    if (part.startsWith('`') && part.endsWith('`') && part.length >= 2) {
+      return (
+        <code key={idx} className="inline-code">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    if (part.startsWith('**') && part.endsWith('**') && part.length >= 4) {
+      return <strong key={idx}>{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
 }
 
 function splitExpectedActual(msg: string): {
@@ -70,6 +77,8 @@ function splitExpectedActual(msg: string): {
 }
 
 export const ResultsDock: React.FC<ResultsDockProps> = ({
+  problem,
+  userCode,
   state,
   tests,
   collapsed,
@@ -79,6 +88,16 @@ export const ResultsDock: React.FC<ResultsDockProps> = ({
   const getTestKind = (name: string): 'wajib' | 'saran' => {
     return tests.find((t) => t.name === name)?.kind ?? 'wajib';
   };
+
+  const runReport = useMemo(() => {
+    if (state.kind !== 'run') return null;
+    return buildRunExplanation(problem, userCode, state.result);
+  }, [state, problem, userCode]);
+
+  const submitReport = useMemo(() => {
+    if (state.kind !== 'submit') return null;
+    return buildSubmitExplanation(problem, userCode, state.result);
+  }, [state, problem, userCode]);
 
   return (
     <section className="latih-results" aria-label="Hasil Eksekusi">
@@ -90,7 +109,7 @@ export const ResultsDock: React.FC<ResultsDockProps> = ({
           aria-expanded={!collapsed}
         >
           <Terminal size={15} />
-          <span>Panel Output & Hasil Pengujian</span>
+          <span>Panel Output & Penjelasan Hasil Kode</span>
           {collapsed ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
         </button>
       </div>
@@ -101,32 +120,42 @@ export const ResultsDock: React.FC<ResultsDockProps> = ({
           {state.kind === 'idle' && (
             <p className="latih-verdict latih-verdict-idle">
               Siap diuji. Tekan <strong>Jalankan (Ctrl+Enter)</strong> untuk
-              mengetes <code>void main()</code>, atau{' '}
-              <strong>Nilai (Ctrl+Shift+Enter)</strong> untuk penilaian penuh.
+              mengetes <code>void main()</code> sekaligus melihat penjelasan
+              alur kodemu, atau <strong>Nilai (Ctrl+Shift+Enter)</strong> untuk
+              penilaian penuh.
             </p>
           )}
 
           {state.kind === 'running' && (
             <p className="latih-verdict latih-verdict-running" role="status">
               {state.mode === 'run'
-                ? 'Menjalankan fungsi void main()...'
+                ? 'Menjalankan fungsi void main() & menganalisis alur kodemu...'
                 : 'Menilai jawaban dengan unit test soal...'}
             </p>
           )}
 
-          {state.kind === 'run' && (
+          {state.kind === 'run' && runReport && (
             <>
               {state.result.timedOut ? (
                 <p className="latih-verdict latih-verdict-fail">
                   Timeout: program tidak selesai dalam batas waktu.
                 </p>
               ) : state.result.jsError === null ? (
-                <p className="latih-verdict latih-verdict-pass">
+                <p
+                  className={`latih-verdict ${
+                    runReport.totalChecks > 0 &&
+                    runReport.matchCount === runReport.totalChecks
+                      ? 'latih-verdict-pass'
+                      : runReport.matchCount > 0
+                        ? 'latih-verdict-warn'
+                        : 'latih-verdict-idle'
+                  }`}
+                >
                   <CheckCircle2 size={15} /> Eksekusi <code>void main()</code>{' '}
-                  selesai ({state.result.stdout.length} baris output)
-                  {state.result.usedAutoMain
-                    ? ' — memakai void main() bawaan soal.'
-                    : '.'}
+                  selesai ({state.result.stdout.length} baris output) —{' '}
+                  {runReport.totalChecks > 0
+                    ? `${runReport.matchCount}/${runReport.totalChecks} Uji Cocok`
+                    : 'Selesai'}
                 </p>
               ) : (
                 <p className="latih-verdict latih-verdict-fail">
@@ -134,35 +163,76 @@ export const ResultsDock: React.FC<ResultsDockProps> = ({
                 </p>
               )}
 
+              {/* Automatic Code & Output Explanation Card */}
+              <div className="output-explainer-card">
+                <div className="explainer-head">
+                  <Sparkles size={15} className="accent-icon" />
+                  <strong>{runReport.headline}</strong>
+                </div>
+
+                <p className="explainer-flow-text">
+                  {renderInlineCode(runReport.codeFlowSummary)}
+                </p>
+
+                {runReport.detectedConstructs.length > 0 && (
+                  <div className="explainer-constructs">
+                    <span className="constructs-label">
+                      Sintaks yang terdeteksi di kodemu:
+                    </span>
+                    {runReport.detectedConstructs.map((c) => (
+                      <span key={c} className="construct-chip">
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="explainer-next-step">
+                  <ArrowRightCircle size={14} className="next-icon" />
+                  <span>{renderInlineCode(runReport.nextStepAdvice)}</span>
+                </div>
+              </div>
+
+              {/* Line-by-Line Output + Explanation */}
               <div className="run-stdout-container">
-                {state.result.stdout.length === 0 ? (
-                  <pre className="latih-stdout">(tidak ada output dari print)</pre>
+                {runReport.lines.length === 0 ? (
+                  <pre className="latih-stdout">
+                    (tidak ada output dari print)
+                  </pre>
                 ) : (
                   <div className="latih-stdout-lines">
-                    {state.result.stdout.map((line, idx) => {
-                      const status = checkRunLineMatch(line);
-                      return (
-                        <div
-                          key={idx}
-                          className={`stdout-line stdout-${status}`}
-                        >
-                          {status === 'match' && (
+                    {runReport.lines.map((lineItem, idx) => (
+                      <div
+                        key={idx}
+                        className={`stdout-item-card status-${lineItem.status}`}
+                      >
+                        <div className="stdout-line">
+                          {lineItem.status === 'match' && (
                             <span className="stdout-badge pass">COCOK</span>
                           )}
-                          {status === 'mismatch' && (
-                            <span className="stdout-badge fail">BELUM COCOK</span>
+                          {lineItem.status === 'mismatch' && (
+                            <span className="stdout-badge fail">
+                              BELUM COCOK
+                            </span>
                           )}
-                          <code>{line}</code>
+                          {lineItem.status === 'neutral' && (
+                            <span className="stdout-badge neutral">OUTPUT</span>
+                          )}
+                          <code>{lineItem.rawLine}</code>
                         </div>
-                      );
-                    })}
+                        <div className="stdout-line-explanation">
+                          <Info size={13} className="exp-info-icon" />
+                          <span>{renderInlineCode(lineItem.explanation)}</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
             </>
           )}
 
-          {state.kind === 'submit' && (
+          {state.kind === 'submit' && submitReport && (
             <>
               {state.result.incompleteReason !== null ? (
                 <p className="latih-verdict latih-verdict-fail">
@@ -184,16 +254,30 @@ export const ResultsDock: React.FC<ResultsDockProps> = ({
                   ) : (
                     <p className="latih-verdict latih-verdict-fail">
                       <XCircle size={15} /> Belum lulus penuh: {passed} dari{' '}
-                      {total} test lulus ({total - passed} gagal). Periksa detail
-                      di bawah.
+                      {total} test lulus ({total - passed} gagal).
                     </p>
                   );
                 })()
               )}
 
+              {/* Submit Explanation Summary Card */}
+              <div className="output-explainer-card">
+                <div className="explainer-head">
+                  <Sparkles size={15} className="accent-icon" />
+                  <strong>{submitReport.headline}</strong>
+                </div>
+                <p className="explainer-flow-text">
+                  {renderInlineCode(submitReport.codeFlowSummary)}
+                </p>
+                <div className="explainer-next-step">
+                  <ArrowRightCircle size={14} className="next-icon" />
+                  <span>{renderInlineCode(submitReport.advice)}</span>
+                </div>
+              </div>
+
               <div className="submit-details">
                 <h3 className="latih-results-heading">
-                  Daftar Unit Test ({state.result.results.length})
+                  Rincian Unit Test ({state.result.results.length})
                 </h3>
                 <ul className="latih-test-list">
                   {state.result.results.map((item: TestCaseResult) => {
@@ -221,7 +305,7 @@ export const ResultsDock: React.FC<ResultsDockProps> = ({
                             {tail !== null && <div>{tail}</div>}
                             {item.reason !== '' && (
                               <div className="latih-reason">
-                                Petunjuk: {item.reason}
+                                Penjelasan & Solusi: {item.reason}
                               </div>
                             )}
                           </div>
@@ -248,6 +332,19 @@ export const ResultsDock: React.FC<ResultsDockProps> = ({
               <p className="latih-verdict latih-verdict-warn">
                 <AlertTriangle size={15} /> Error Compile: {state.summary}
               </p>
+              <div className="output-explainer-card">
+                <div className="explainer-head">
+                  <AlertTriangle size={15} className="accent-icon" />
+                  <strong>Mengapa Terjadi Error Compile?</strong>
+                </div>
+                <p className="explainer-flow-text">
+                  Kompilator Dart menemukan penulisan sintaks yang belum sesuai
+                  aturan (misalnya kurang titik koma <code>;</code>, kurung
+                  kurawal belum ditutup, atau nama variabel salah ketik). Klik
+                  tautan baris di bawah untuk langsung melompat ke baris yang
+                  perlu diperbaiki.
+                </p>
+              </div>
               {state.errors.length > 0 && (
                 <ul className="latih-error-list">
                   {state.errors.map((err, idx) => (
@@ -283,4 +380,3 @@ export const ResultsDock: React.FC<ResultsDockProps> = ({
     </section>
   );
 };
-
