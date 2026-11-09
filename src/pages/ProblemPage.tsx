@@ -355,6 +355,26 @@ const ProblemWorkspace: React.FC<{ problem: EnhancedProblem }> = ({
     if (isNarrow) setMobileTab('kode');
   }, [problem.mainTestBlock, isNarrow]);
 
+  const handleApplySolution = useCallback(
+    (solutionCode: string) => {
+      const updated = replaceOrAppendMainBlock(
+        solutionCode,
+        problem.mainTestBlock
+      );
+      setCode(updated);
+      setExternalCode((prevExt) => ({
+        code: updated,
+        seq: (prevExt?.seq ?? 0) + 1,
+      }));
+      setCompileErrors([]);
+      setNotice(
+        'Jawaban dari Dosen Pintar berhasil dipasang ke editor (blok void main() tetap dipertahankan)!'
+      );
+      if (isNarrow) setMobileTab('kode');
+    },
+    [problem.mainTestBlock, isNarrow]
+  );
+
   const handleResetToStarter = useCallback(() => {
     if (confirmReset) {
       setConfirmReset(false);
@@ -571,7 +591,10 @@ const ProblemWorkspace: React.FC<{ problem: EnhancedProblem }> = ({
               <div className="latih-brief-col">
                 <BriefAndSyntaxPanel
                   problem={problem}
+                  userCode={code}
+                  execState={execState}
                   onInsertOrResetMain={handleInsertOrResetMain}
+                  onApplySolution={handleApplySolution}
                 />
               </div>
             )}
@@ -621,7 +644,10 @@ const ProblemWorkspace: React.FC<{ problem: EnhancedProblem }> = ({
           <div className="latih-brief-col" style={{ flex: 1 }}>
             <BriefAndSyntaxPanel
               problem={problem}
+              userCode={code}
+              execState={execState}
               onInsertOrResetMain={handleInsertOrResetMain}
+              onApplySolution={handleApplySolution}
             />
           </div>
         </div>

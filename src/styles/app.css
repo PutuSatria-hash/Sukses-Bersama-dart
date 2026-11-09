@@ -1625,3 +1625,402 @@ h1, h2, h3 {
   border: 0;
 }
 
+/* ==========================================================================
+   Dosen Pintar — Interactive Lecturer Chatbot
+   ========================================================================== */
+
+.brief-subtab.dosen-tab {
+  border-color: rgba(139, 92, 246, 0.28);
+}
+
+.brief-subtab.dosen-tab.active {
+  color: #c4b5fd;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.22), rgba(34, 211, 238, 0.14));
+  border-color: rgba(139, 92, 246, 0.48);
+}
+
+:root[data-theme='terang'] .brief-subtab.dosen-tab.active {
+  color: #5b21b6;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.14), rgba(14, 165, 233, 0.1));
+}
+
+.shortcut-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dosen-chat-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.dosen-header-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.16), rgba(34, 211, 238, 0.08));
+  border: 1px solid rgba(139, 92, 246, 0.32);
+}
+
+.dosen-header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.dosen-avatar-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(139, 92, 246, 0.22);
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  color: var(--accent-cyan);
+  flex-shrink: 0;
+}
+
+.dosen-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dosen-title-row h2 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.dosen-online-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.14rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.16);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+:root[data-theme='terang'] .dosen-online-pill {
+  color: #047857;
+}
+
+.dosen-header-card p {
+  margin: 0.25rem 0 0;
+  font-size: 0.81rem;
+  color: var(--ink-secondary);
+}
+
+.dosen-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-elevated);
+  color: var(--ink-secondary);
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s var(--ease-fluid);
+}
+
+.dosen-reset-btn:hover {
+  color: var(--ink-primary);
+  border-color: var(--accent-cyan);
+}
+
+.dosen-quick-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 10px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-glass);
+}
+
+.dosen-quick-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dosen-quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.dosen-chip-btn {
+  padding: 0.32rem 0.68rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--ink-primary);
+  font-size: 0.76rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s var(--ease-fluid);
+}
+
+.dosen-chip-btn:hover {
+  background: rgba(34, 211, 238, 0.15);
+  border-color: rgba(34, 211, 238, 0.45);
+  transform: translateY(-1px);
+}
+
+.dosen-messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.dosen-msg-row {
+  display: flex;
+  width: 100%;
+}
+
+.dosen-msg-row.is-user {
+  justify-content: flex-end;
+}
+
+.dosen-msg-row.is-dosen {
+  justify-content: flex-start;
+}
+
+.dosen-msg-bubble {
+  max-width: 96%;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-glass);
+  background: var(--surface-elevated);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.dosen-msg-row.is-user .dosen-msg-bubble {
+  max-width: 85%;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.24), rgba(34, 211, 238, 0.16));
+  border-color: rgba(34, 211, 238, 0.36);
+}
+
+.dosen-msg-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.45rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border-glass);
+  font-size: 0.73rem;
+}
+
+.dosen-msg-author {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+}
+
+.dosen-msg-time {
+  color: var(--ink-muted);
+}
+
+.dosen-msg-h3 {
+  margin: 0.55rem 0 0.35rem;
+  font-size: 0.94rem;
+  color: var(--accent-cyan);
+}
+
+.dosen-msg-h4 {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 0.86rem;
+  color: var(--ink-primary);
+}
+
+.dosen-msg-p {
+  margin: 0.4rem 0;
+}
+
+.dosen-msg-list {
+  margin: 0.4rem 0;
+  padding-left: 1.2rem;
+}
+
+.dosen-msg-list li {
+  margin: 0.25rem 0;
+}
+
+.dosen-msg-quote {
+  margin: 0.55rem 0;
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid var(--accent-cyan);
+  background: rgba(34, 211, 238, 0.07);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.81rem;
+}
+
+.dosen-codeblock {
+  margin: 0.55rem 0;
+  border-radius: 9px;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  background: rgba(10, 14, 24, 0.75);
+}
+
+:root[data-theme='terang'] .dosen-codeblock {
+  background: #f1f5f9;
+}
+
+.dosen-codeblock-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.32rem 0.7rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--ink-muted);
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.dosen-codeblock pre {
+  margin: 0;
+  padding: 0.65rem 0.8rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.48;
+}
+
+.dosen-solution-actions {
+  margin-top: 0.65rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed var(--border-strong);
+}
+
+.dosen-apply-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.48rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.22), rgba(34, 211, 238, 0.16));
+  color: #34d399;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s var(--ease-fluid);
+}
+
+:root[data-theme='terang'] .dosen-apply-btn {
+  color: #047857;
+}
+
+.dosen-apply-btn:hover {
+  transform: translateY(-1px);
+  border-color: #10b981;
+}
+
+.dosen-apply-btn.applied {
+  background: rgba(16, 185, 129, 0.32);
+}
+
+.dosen-followup-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.38rem;
+  margin-top: 0.65rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--border-glass);
+}
+
+.dosen-followup-btn {
+  padding: 0.26rem 0.6rem;
+  border-radius: 7px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--ink-secondary);
+  font-size: 0.74rem;
+  cursor: pointer;
+  transition: all 0.16s var(--ease-fluid);
+}
+
+.dosen-followup-btn:hover {
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  background: rgba(34, 211, 238, 0.08);
+}
+
+.dosen-input-form {
+  display: flex;
+  gap: 0.5rem;
+  position: sticky;
+  bottom: 0;
+  padding: 0.65rem;
+  border-radius: 11px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border-strong);
+}
+
+.dosen-input-field {
+  flex: 1;
+  min-width: 0;
+  padding: 0.52rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-elevated);
+  color: var(--ink-primary);
+  font-size: 0.83rem;
+  outline: none;
+}
+
+.dosen-input-field:focus {
+  border-color: var(--accent-cyan);
+}
+
+.dosen-send-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.52rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.28), rgba(34, 211, 238, 0.22));
+  color: var(--ink-primary);
+  font-size: 0.81rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s var(--ease-fluid);
+}
+
+.dosen-send-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.dosen-send-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+  border-color: var(--accent-cyan);
+}
+
+

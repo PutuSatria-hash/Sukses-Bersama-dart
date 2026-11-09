@@ -9,12 +9,18 @@ import {
   RotateCcw,
   Lightbulb,
   Layers,
+  GraduationCap,
 } from 'lucide-react';
 import type { EnhancedProblem, CodelineExplanation } from '../types/problem';
+import type { ExecutionState } from './ResultsDock';
+import { DosenPintarChat } from './DosenPintarChat';
 
 interface BriefAndSyntaxPanelProps {
   problem: EnhancedProblem;
+  userCode: string;
+  execState: ExecutionState;
   onInsertOrResetMain: () => void;
+  onApplySolution: (solutionCode: string) => void;
 }
 
 function renderInlineMarkdown(text: string): React.ReactNode[] {
@@ -228,11 +234,14 @@ const MarkdownBriefRenderer: React.FC<{ markdown: string }> = ({
 
 export const BriefAndSyntaxPanel: React.FC<BriefAndSyntaxPanelProps> = ({
   problem,
+  userCode,
+  execState,
   onInsertOrResetMain,
+  onApplySolution,
 }) => {
-  const [activeTab, setActiveTab] = useState<'soal' | 'main-guide' | 'sintaks'>(
-    'soal'
-  );
+  const [activeTab, setActiveTab] = useState<
+    'soal' | 'main-guide' | 'sintaks' | 'dosen'
+  >('soal');
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [copiedMain, setCopiedMain] = useState(false);
@@ -298,6 +307,16 @@ export const BriefAndSyntaxPanel: React.FC<BriefAndSyntaxPanelProps> = ({
           <Code2 size={15} />
           <span>Bedah Kode ({problem.codelineExplanations.length})</span>
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'dosen'}
+          className={`brief-subtab dosen-tab ${activeTab === 'dosen' ? 'active' : ''}`}
+          onClick={() => setActiveTab('dosen')}
+        >
+          <GraduationCap size={15} />
+          <span>Dosen Pintar</span>
+        </button>
       </div>
 
       {/* Tab Content */}
@@ -309,10 +328,10 @@ export const BriefAndSyntaxPanel: React.FC<BriefAndSyntaxPanelProps> = ({
               <div className="learning-shortcut-info">
                 <Sparkles size={16} className="accent-icon" />
                 <div>
-                  <strong>Fitur Testing & Bedah Kode Aktif:</strong> Soal ini
-                  sudah dilengkapi blok <code>void main()</code> di editor.
-                  Pelajari cara membuat fungsi testing dan arti setiap baris
-                  kode pada tab di atas.
+                  <strong>Fitur Testing, Bedah Kode & Dosen Pintar Aktif:</strong>{' '}
+                  Soal ini sudah dilengkapi blok <code>void main()</code> di
+                  editor. Tanyakan cara menjawab, arti fungsi, atau jawaban
+                  seharusnya pada <strong>Dosen Pintar</strong> di tab atas.
                 </div>
               </div>
               <div className="learning-shortcut-actions">
@@ -325,10 +344,17 @@ export const BriefAndSyntaxPanel: React.FC<BriefAndSyntaxPanelProps> = ({
                 </button>
                 <button
                   type="button"
-                  className="shortcut-pill-btn primary"
+                  className="shortcut-pill-btn"
                   onClick={() => setActiveTab('sintaks')}
                 >
                   Bedah Fungsi Kode ({problem.codelineExplanations.length})
+                </button>
+                <button
+                  type="button"
+                  className="shortcut-pill-btn primary"
+                  onClick={() => setActiveTab('dosen')}
+                >
+                  <GraduationCap size={13} /> Tanya Dosen Pintar
                 </button>
               </div>
             </div>
@@ -502,6 +528,17 @@ export const BriefAndSyntaxPanel: React.FC<BriefAndSyntaxPanelProps> = ({
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {activeTab === 'dosen' && (
+          <div className="tab-fade-in">
+            <DosenPintarChat
+              problem={problem}
+              userCode={userCode}
+              execState={execState}
+              onApplySolution={onApplySolution}
+            />
           </div>
         )}
       </div>
